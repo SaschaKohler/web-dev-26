@@ -114,6 +114,10 @@ class Section(models.Model):
         ('pricing', 'Pricing Table'),
         ('faq', 'FAQ Accordion'),
         ('contact_form', 'Contact Form'),
+        ('stats', 'Stats/Numbers'),
+        ('logo_grid', 'Logo Grid'),
+        ('process_steps', 'Process Steps'),
+        ('newsletter', 'Newsletter Signup'),
     ]
     
     BACKGROUND_TYPES = [

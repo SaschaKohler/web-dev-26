@@ -107,7 +107,11 @@ const LayoutEditor: React.FC<LayoutEditorProps> = ({ layoutId, onClose }) => {
     { value: 'team', label: 'Team Members' },
     { value: 'pricing', label: 'Pricing Table' },
     { value: 'faq', label: 'FAQ Accordion' },
-    { value: 'contact_form', label: 'Contact Form' }
+    { value: 'contact_form', label: 'Contact Form' },
+    { value: 'stats', label: 'Stats/Numbers' },
+    { value: 'logo_grid', label: 'Logo Grid' },
+    { value: 'process_steps', label: 'Process Steps' },
+    { value: 'newsletter', label: 'Newsletter Signup' }
   ];
 
   const blockTypes = [

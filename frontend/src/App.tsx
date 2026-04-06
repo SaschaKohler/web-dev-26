@@ -4,7 +4,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeContextProvider, useThemeContext } from './contexts/ThemeContext';
 import { AdminThemeProvider, useAdminTheme } from './contexts/AdminThemeContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
@@ -22,6 +25,7 @@ import NavigationEditor from './pages/admin/NavigationEditor';
 import SiteSettingsEditor from './pages/admin/SiteSettingsEditor';
 import PageSEOEditor from './pages/admin/PageSEOEditor';
 import DecadeThemeManager from './pages/admin/DecadeThemeManager';
+import UserManagement from './pages/admin/UserManagement';
 
 function ThemedRoutes() {
   const location = useLocation();
@@ -43,15 +47,17 @@ function ThemedRoutes() {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/impressum" element={<Impressum />} />
-        <Route path="/admin" element={<AdminLayout><AdminDashboard /></AdminLayout>} />
-        <Route path="/admin/templates" element={<AdminLayout><AdminTemplates /></AdminLayout>} />
-        <Route path="/admin/page-layouts" element={<AdminLayout><AdminPageLayouts /></AdminLayout>} />
-        <Route path="/admin/layouts" element={<AdminLayout><AdminLayouts /></AdminLayout>} />
-        <Route path="/admin/global-templates" element={<AdminLayout><GlobalTemplatesManager /></AdminLayout>} />
-        <Route path="/admin/navigation" element={<AdminLayout><NavigationEditor /></AdminLayout>} />
-        <Route path="/admin/site-settings" element={<AdminLayout><SiteSettingsEditor /></AdminLayout>} />
-        <Route path="/admin/seo" element={<AdminLayout><PageSEOEditor /></AdminLayout>} />
-        <Route path="/admin/decade-themes" element={<AdminLayout><DecadeThemeManager /></AdminLayout>} />
+        <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin" element={<ProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/templates" element={<ProtectedRoute><AdminLayout><AdminTemplates /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/page-layouts" element={<ProtectedRoute><AdminLayout><AdminPageLayouts /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/layouts" element={<ProtectedRoute><AdminLayout><AdminLayouts /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/global-templates" element={<ProtectedRoute><AdminLayout><GlobalTemplatesManager /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/navigation" element={<ProtectedRoute><AdminLayout><NavigationEditor /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/site-settings" element={<ProtectedRoute><AdminLayout><SiteSettingsEditor /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/seo" element={<ProtectedRoute><AdminLayout><PageSEOEditor /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/decade-themes" element={<ProtectedRoute><AdminLayout><DecadeThemeManager /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
       </Routes>
     </ThemeProvider>
   );
@@ -59,13 +65,15 @@ function ThemedRoutes() {
 
 function App() {
   return (
-    <ThemeContextProvider>
-      <AdminThemeProvider>
-        <Router>
-          <ThemedRoutes />
-        </Router>
-      </AdminThemeProvider>
-    </ThemeContextProvider>
+    <AuthProvider>
+      <ThemeContextProvider>
+        <AdminThemeProvider>
+          <Router>
+            <ThemedRoutes />
+          </Router>
+        </AdminThemeProvider>
+      </ThemeContextProvider>
+    </AuthProvider>
   );
 }
 

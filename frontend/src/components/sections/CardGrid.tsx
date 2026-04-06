@@ -18,6 +18,10 @@ interface CardGridProps {
   cards: CardItem[];
   columns?: { xs: number; sm: number; md: number };
   paddingY?: number;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  cardElevation?: number;
+  imageHeight?: number;
 }
 
 const CardGrid: React.FC<CardGridProps> = ({
@@ -25,10 +29,20 @@ const CardGrid: React.FC<CardGridProps> = ({
   subtitle,
   cards,
   columns = { xs: 1, sm: 2, md: 3 },
-  paddingY = 8
+  paddingY = 8,
+  backgroundColor,
+  backgroundImage,
+  cardElevation = 1,
+  imageHeight = 200
 }) => {
   return (
-    <Box sx={{ py: paddingY }}>
+    <Box sx={{ 
+      py: paddingY,
+      backgroundColor: backgroundColor || 'transparent',
+      backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
       <Container maxWidth="lg">
         {title && (
           <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -57,6 +71,7 @@ const CardGrid: React.FC<CardGridProps> = ({
           {cards.map((card) => (
             <Card
               key={card.id}
+              elevation={cardElevation}
               sx={{
                 height: '100%',
                 display: 'flex',
@@ -71,7 +86,7 @@ const CardGrid: React.FC<CardGridProps> = ({
               {card.imageUrl && (
                 <CardMedia
                   component="img"
-                  height="200"
+                  height={imageHeight}
                   image={card.imageUrl}
                   alt={card.title}
                   sx={{ objectFit: 'cover' }}

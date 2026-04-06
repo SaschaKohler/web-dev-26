@@ -358,7 +358,7 @@ const AdminDashboard: React.FC = () => {
                 <ListItemText
                   primary={page.title}
                   secondary={
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 0.5 }}>
+                    <Box component="span" sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 0.5 }}>
                       <Typography variant="caption" color="text.secondary">
                         /{page.slug}
                       </Typography>
@@ -372,6 +372,7 @@ const AdminDashboard: React.FC = () => {
                       )}
                     </Box>
                   }
+                  secondaryTypographyProps={{ component: 'span' }}
                 />
               </ListItem>
               {index < recentPages.length - 1 && <Divider />}

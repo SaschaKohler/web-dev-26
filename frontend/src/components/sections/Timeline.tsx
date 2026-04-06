@@ -15,16 +15,30 @@ interface TimelineProps {
   subtitle?: string;
   items: TimelineItem[];
   paddingY?: number;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  lineColor?: string;
+  dotColor?: string;
 }
 
 const Timeline: React.FC<TimelineProps> = ({
   title,
   subtitle,
   items,
-  paddingY = 8
+  paddingY = 8,
+  backgroundColor,
+  backgroundImage,
+  lineColor = 'primary.main',
+  dotColor = 'primary.main'
 }) => {
   return (
-    <Box sx={{ py: paddingY, backgroundColor: 'background.default' }}>
+    <Box sx={{ 
+      py: paddingY, 
+      backgroundColor: backgroundColor || 'background.default',
+      backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
       <Container maxWidth="md">
         {title && (
           <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -48,7 +62,7 @@ const Timeline: React.FC<TimelineProps> = ({
               top: 0,
               bottom: 0,
               width: '2px',
-              backgroundColor: 'primary.main',
+              backgroundColor: lineColor,
               transform: { md: 'translateX(-50%)' }
             }}
           />
@@ -76,7 +90,7 @@ const Timeline: React.FC<TimelineProps> = ({
                 <Circle
                   sx={{
                     fontSize: 20,
-                    color: 'primary.main',
+                    color: dotColor,
                     backgroundColor: 'background.paper',
                     borderRadius: '50%'
                   }}

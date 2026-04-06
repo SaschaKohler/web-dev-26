@@ -15,6 +15,10 @@ interface ImageGalleryProps {
   images: GalleryImage[];
   columns?: { xs: number; sm: number; md: number };
   paddingY?: number;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  gap?: number;
+  aspectRatio?: number;
 }
 
 const ImageGallery: React.FC<ImageGalleryProps> = ({
@@ -22,12 +26,22 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
   subtitle,
   images,
   columns = { xs: 1, sm: 2, md: 3 },
-  paddingY = 8
+  paddingY = 8,
+  backgroundColor,
+  backgroundImage,
+  gap = 2,
+  aspectRatio = 75
 }) => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
   return (
-    <Box sx={{ py: paddingY }}>
+    <Box sx={{ 
+      py: paddingY,
+      backgroundColor: backgroundColor || 'transparent',
+      backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
       <Container maxWidth="lg">
         {title && (
           <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -50,7 +64,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
               sm: `repeat(${columns.sm}, 1fr)`,
               md: `repeat(${columns.md}, 1fr)`
             },
-            gap: 2
+            gap
           }}
         >
           {images.map((image) => (
@@ -59,7 +73,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
               onClick={() => setSelectedImage(image)}
               sx={{
                 position: 'relative',
-                paddingTop: '75%',
+                paddingTop: `${aspectRatio}%`,
                 overflow: 'hidden',
                 borderRadius: 2,
                 cursor: 'pointer',

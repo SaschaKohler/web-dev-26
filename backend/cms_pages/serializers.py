@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem, DecadeTheme
 
 class NavigationItemSerializer(serializers.ModelSerializer):
@@ -96,3 +97,10 @@ class DecadeThemeSerializer(serializers.ModelSerializer):
         model = DecadeTheme
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'is_superuser', 'date_joined', 'last_login']
+        read_only_fields = ['id', 'date_joined', 'last_login']

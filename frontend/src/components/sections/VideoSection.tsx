@@ -7,6 +7,8 @@ interface VideoSectionProps {
   videoUrl: string;
   aspectRatio?: string;
   paddingY?: number;
+  backgroundColor?: string;
+  backgroundImage?: string;
 }
 
 const VideoSection: React.FC<VideoSectionProps> = ({
@@ -14,7 +16,9 @@ const VideoSection: React.FC<VideoSectionProps> = ({
   subtitle,
   videoUrl,
   aspectRatio = '16/9',
-  paddingY = 8
+  paddingY = 8,
+  backgroundColor,
+  backgroundImage
 }) => {
   const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
   const isVimeo = videoUrl.includes('vimeo.com');
@@ -32,7 +36,13 @@ const VideoSection: React.FC<VideoSectionProps> = ({
   };
 
   return (
-    <Box sx={{ py: paddingY, backgroundColor: 'background.default' }}>
+    <Box sx={{ 
+      py: paddingY, 
+      backgroundColor: backgroundColor || 'background.default',
+      backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
       <Container maxWidth="lg">
         {title && (
           <Box sx={{ textAlign: 'center', mb: 6 }}>

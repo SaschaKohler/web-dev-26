@@ -16,6 +16,9 @@ interface TestimonialSectionProps {
   testimonials: Testimonial[];
   columns?: { xs: number; sm: number; md: number };
   paddingY?: number;
+  backgroundColor?: string;
+  backgroundImage?: string;
+  cardElevation?: number;
 }
 
 const TestimonialSection: React.FC<TestimonialSectionProps> = ({
@@ -23,10 +26,19 @@ const TestimonialSection: React.FC<TestimonialSectionProps> = ({
   subtitle,
   testimonials,
   columns = { xs: 1, sm: 2, md: 3 },
-  paddingY = 8
+  paddingY = 8,
+  backgroundColor,
+  backgroundImage,
+  cardElevation = 2
 }) => {
   return (
-    <Box sx={{ py: paddingY, backgroundColor: 'background.default' }}>
+    <Box sx={{ 
+      py: paddingY, 
+      backgroundColor: backgroundColor || 'background.default',
+      backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
       <Container maxWidth="lg">
         {title && (
           <Box sx={{ textAlign: 'center', mb: 6 }}>
@@ -55,7 +67,7 @@ const TestimonialSection: React.FC<TestimonialSectionProps> = ({
           {testimonials.map((testimonial) => (
             <Paper
               key={testimonial.id}
-              elevation={2}
+              elevation={cardElevation}
               sx={{
                 p: 4,
                 position: 'relative',

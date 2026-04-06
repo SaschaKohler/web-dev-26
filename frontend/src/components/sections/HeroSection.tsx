@@ -10,6 +10,10 @@ interface HeroSectionProps {
   ctaText?: string;
   ctaLink?: string;
   height?: string | number;
+  paddingTop?: number;
+  paddingBottom?: number;
+  textAlign?: 'left' | 'center' | 'right';
+  overlayOpacity?: number;
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({
@@ -19,7 +23,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   backgroundColor = 'primary.main',
   ctaText,
   ctaLink,
-  height = '70vh'
+  height = '70vh',
+  paddingTop,
+  paddingBottom,
+  textAlign = 'center',
+  overlayOpacity = 0.4
 }) => {
   return (
     <Box
@@ -34,6 +42,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: 'white',
+        pt: paddingTop ? `${paddingTop}px` : undefined,
+        pb: paddingBottom ? `${paddingBottom}px` : undefined,
         '&::before': backgroundImage ? {
           content: '""',
           position: 'absolute',
@@ -41,11 +51,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
         } : {}
       }}
     >
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, textAlign }}>
         <Typography
           variant="h1"
           sx={{

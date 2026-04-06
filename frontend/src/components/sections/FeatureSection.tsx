@@ -16,6 +16,8 @@ interface FeatureSectionProps {
   features: Feature[];
   columns?: { xs: number; sm: number; md: number };
   paddingY?: number;
+  backgroundColor?: string;
+  backgroundImage?: string;
 }
 
 const FeatureSection: React.FC<FeatureSectionProps> = ({
@@ -23,7 +25,9 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({
   subtitle,
   features,
   columns = { xs: 1, sm: 2, md: 3 },
-  paddingY = 8
+  paddingY = 8,
+  backgroundColor,
+  backgroundImage
 }) => {
   const getIcon = (iconName?: string) => {
     if (!iconName) return null;
@@ -32,7 +36,13 @@ const FeatureSection: React.FC<FeatureSectionProps> = ({
   };
 
   return (
-    <Box sx={{ py: paddingY, backgroundColor: 'background.default' }}>
+    <Box sx={{ 
+      py: paddingY, 
+      backgroundColor: backgroundColor || 'background.default',
+      backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
       <Container maxWidth="lg">
         {title && (
           <Box sx={{ textAlign: 'center', mb: 6 }}>

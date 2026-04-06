@@ -21,6 +21,9 @@ interface FAQSectionProps {
   items: FAQItem[];
   paddingY?: number;
   backgroundColor?: string;
+  backgroundImage?: string;
+  accordionSpacing?: number;
+  expandIconColor?: string;
 }
 
 const FAQSection: React.FC<FAQSectionProps> = ({
@@ -28,7 +31,10 @@ const FAQSection: React.FC<FAQSectionProps> = ({
   subtitle,
   items,
   paddingY = 8,
-  backgroundColor
+  backgroundColor,
+  backgroundImage,
+  accordionSpacing = 2,
+  expandIconColor
 }) => {
   const [expanded, setExpanded] = useState<string | false>(false);
 
@@ -40,7 +46,10 @@ const FAQSection: React.FC<FAQSectionProps> = ({
     <Box
       sx={{
         py: paddingY,
-        backgroundColor: backgroundColor || 'transparent'
+        backgroundColor: backgroundColor || 'transparent',
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
       }}
     >
       <Container maxWidth="lg">
@@ -60,10 +69,10 @@ const FAQSection: React.FC<FAQSectionProps> = ({
             key={item.id}
             expanded={expanded === `panel${index}`}
             onChange={handleChange(`panel${index}`)}
-            sx={{ mb: 2 }}
+            sx={{ mb: accordionSpacing }}
           >
             <AccordionSummary
-              expandIcon={<ExpandMore />}
+              expandIcon={<ExpandMore sx={{ color: expandIconColor }} />}
               aria-controls={`panel${index}-content`}
               id={`panel${index}-header`}
             >

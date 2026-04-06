@@ -9,6 +9,10 @@ import FeatureSection from './sections/FeatureSection';
 import CTASection from './sections/CTASection';
 import TestimonialSection from './sections/TestimonialSection';
 import FAQSection from './sections/FAQSection';
+import StatsSection from './sections/StatsSection';
+import LogoGridSection from './sections/LogoGridSection';
+import ProcessStepsSection from './sections/ProcessStepsSection';
+import NewsletterSection from './sections/NewsletterSection';
 
 interface ContentBlock {
   id: number;
@@ -98,6 +102,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             subtitle={section.subtitle}
             features={features}
             paddingY={paddingY}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -120,6 +126,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             subtitle={section.subtitle}
             cards={cards}
             paddingY={paddingY}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -140,6 +148,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             subtitle={section.subtitle}
             items={timelineItems}
             paddingY={paddingY}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -159,6 +169,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             subtitle={section.subtitle}
             images={images}
             paddingY={paddingY}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -172,6 +184,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             subtitle={section.subtitle}
             videoUrl={videoBlock.video_url}
             paddingY={paddingY}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -192,6 +206,8 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             subtitle={section.subtitle}
             testimonials={testimonials}
             paddingY={paddingY}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -208,6 +224,7 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             secondaryButtonText={secondaryBtn?.title}
             secondaryButtonLink={secondaryBtn?.link_url}
             backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
             paddingY={paddingY}
           />
         );
@@ -228,6 +245,7 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
             items={faqItems}
             paddingY={paddingY}
             backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
           />
         );
 
@@ -244,6 +262,92 @@ const PageRenderer: React.FC<PageRendererProps> = ({ layout }) => {
               <Box key={block.id} dangerouslySetInnerHTML={{ __html: block.content }} />
             ))}
           </Box>
+        );
+
+      case 'stats':
+        const stats = blocks
+          .filter(b => b.block_type === 'stat')
+          .map(b => ({
+            id: b.id,
+            title: b.title,
+            content: b.content,
+            icon_color: b.icon_color
+          }));
+        return (
+          <StatsSection
+            key={section.id}
+            title={section.title}
+            subtitle={section.subtitle}
+            stats={stats}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
+            paddingTop={section.padding_top}
+            paddingBottom={section.padding_bottom}
+          />
+        );
+
+      case 'logo_grid':
+        const logos = blocks
+          .filter(b => b.block_type === 'image')
+          .map(b => ({
+            id: b.id,
+            title: b.title,
+            image_url: b.image_url || '',
+            image_alt: b.image_alt,
+            link_url: b.link_url
+          }));
+        return (
+          <LogoGridSection
+            key={section.id}
+            title={section.title}
+            subtitle={section.subtitle}
+            logos={logos}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
+            paddingTop={section.padding_top}
+            paddingBottom={section.padding_bottom}
+          />
+        );
+
+      case 'process_steps':
+        const steps = blocks
+          .filter(b => b.block_type === 'text' || b.block_type === 'feature')
+          .map(b => ({
+            id: b.id,
+            title: b.title,
+            content: b.content,
+            icon_color: b.icon_color,
+            order: b.order
+          }));
+        return (
+          <ProcessStepsSection
+            key={section.id}
+            title={section.title}
+            subtitle={section.subtitle}
+            steps={steps}
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
+            paddingTop={section.padding_top}
+            paddingBottom={section.padding_bottom}
+          />
+        );
+
+      case 'newsletter':
+        const newsletterButton = blocks.find(b => b.block_type === 'button');
+        const newsletterText = blocks.find(b => b.block_type === 'text');
+        return (
+          <NewsletterSection
+            key={section.id}
+            title={section.title}
+            subtitle={section.subtitle}
+            content={newsletterText?.content}
+            buttonText={newsletterButton?.title || 'Subscribe'}
+            placeholderText="Enter your email"
+            backgroundColor={section.background_color}
+            backgroundImage={section.background_image}
+            paddingTop={section.padding_top}
+            paddingBottom={section.padding_bottom}
+          />
         );
 
       default:

@@ -10,7 +10,10 @@ interface CTASectionProps {
   secondaryButtonText?: string;
   secondaryButtonLink?: string;
   backgroundColor?: string;
+  backgroundImage?: string;
   paddingY?: number;
+  textAlign?: 'left' | 'center' | 'right';
+  overlayOpacity?: number;
 }
 
 const CTASection: React.FC<CTASectionProps> = ({
@@ -21,18 +24,34 @@ const CTASection: React.FC<CTASectionProps> = ({
   secondaryButtonText,
   secondaryButtonLink,
   backgroundColor = 'primary.main',
-  paddingY = 10
+  backgroundImage,
+  paddingY = 10,
+  textAlign = 'center',
+  overlayOpacity = 0.5
 }) => {
   return (
     <Box
       sx={{
         py: paddingY,
-        backgroundColor,
-        color: 'white'
+        backgroundColor: !backgroundImage ? backgroundColor : 'transparent',
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        color: 'white',
+        position: 'relative',
+        '&::before': backgroundImage ? {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
+        } : {}
       }}
     >
-      <Container maxWidth="md">
-        <Box sx={{ textAlign: 'center' }}>
+      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
+        <Box sx={{ textAlign }}>
           <Typography
             variant="h2"
             gutterBottom

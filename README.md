@@ -1,6 +1,6 @@
-# LSB Website Template - Django + React
+# LSB Website - Django + React
 
-Template-based website solution for Austrian Lebens- und Sozialberater (LSB).
+Modern website solution for Austrian Lebens- und Sozialberater with customizable themes and content management.
 
 ## Project Structure
 
@@ -98,14 +98,6 @@ cd backend
 uv run python populate_pages.py
 ```
 
-## Deployment Strategy
-
-This is a **"Deploy-and-Own"** product model:
-- Build once, deploy multiple times for different LSB clients
-- Each client gets their own instance
-- Clients can edit content via Django admin
-- No ongoing maintenance required
-
 ## Legal Compliance (Austria)
 
 The Impressum page includes Austrian legal requirements:
@@ -139,23 +131,11 @@ The Booking page is ready for Cal.com integration:
 - Axios 1.14.0
 - Cal.com Embed React 1.5.3
 
-## Next Steps
+## Development Status
 
-1. ✅ Backend configuration complete
-2. ✅ API routes configured
-3. ✅ Database initialized with content
-4. 🔄 Test integration (start both servers)
-5. ⏳ Add DSGVO template content
-6. ⏳ Customize Cal.com booking link
-7. ⏳ Deploy first pilot instance
-
-## Business Model
-
-**Target:** 2,600+ LSBs in Austria (lebensberatung.at)
-
-**Pricing:**
-- Starter: €890 (5 pages + legal templates)
-- Pro: €1,490 (+ booking + Google Business setup)
-- Annual DSGVO review: €149/year
-
-**Key Differentiator:** No retainer, client owns and controls everything.
+- ✅ Backend configuration complete
+- ✅ API routes configured
+- ✅ Database initialized with content
+- ✅ Decade theme system implemented
+- ✅ Admin dashboard with neutral theme
+- 🔄 Testing and refinement ongoing

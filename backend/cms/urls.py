@@ -20,7 +20,7 @@ from rest_framework.routers import DefaultRouter
 from cms_pages.views import (
     PageViewSet, DesignTemplateViewSet, SiteSettingsViewSet,
     PageLayoutViewSet, SectionViewSet, ContentBlockViewSet,
-    GlobalTemplateViewSet, NavigationItemViewSet
+    GlobalTemplateViewSet, NavigationItemViewSet, DecadeThemeViewSet
 )
 
 router = DefaultRouter()
@@ -32,6 +32,7 @@ router.register(r'sections', SectionViewSet)
 router.register(r'blocks', ContentBlockViewSet)
 router.register(r'global-templates', GlobalTemplateViewSet)
 router.register(r'navigation-items', NavigationItemViewSet)
+router.register(r'decade-themes', DecadeThemeViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

@@ -1,11 +1,11 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem
+from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem, DecadeTheme
 from .serializers import (
     PageSerializer, DesignTemplateSerializer, SiteSettingsSerializer,
     PageLayoutSerializer, SectionSerializer, ContentBlockSerializer, PageDetailSerializer,
-    GlobalTemplateSerializer, NavigationItemSerializer
+    GlobalTemplateSerializer, NavigationItemSerializer, DecadeThemeSerializer
 )
 
 class PageViewSet(viewsets.ModelViewSet):
@@ -162,3 +162,58 @@ class NavigationItemViewSet(viewsets.ModelViewSet):
         if template_id is not None:
             queryset = queryset.filter(global_template_id=template_id)
         return queryset
+
+
+class DecadeThemeViewSet(viewsets.ModelViewSet):
+    queryset = DecadeTheme.objects.all()
+    serializer_class = DecadeThemeSerializer
+    
+    def get_queryset(self):
+        queryset = DecadeTheme.objects.all().order_by('decade', 'variation')
+        decade = self.request.query_params.get('decade', None)
+        if decade is not None:
+            queryset = queryset.filter(decade=decade)
+        return queryset
+    
+    @action(detail=True, methods=['post'])
+    def activate(self, request, pk=None):
+        """Activate a decade theme and update site settings"""
+        theme = self.get_object()
+        theme.is_active = True
+        theme.save()
+        
+        # Update site settings with the theme_id
+        settings = SiteSettings.get_settings()
+        settings.decade_theme_id = theme.theme_id
+        settings.save()
+        
+        return Response({
+            'status': 'theme activated',
+            'theme': DecadeThemeSerializer(theme).data
+        })
+    
+    @action(detail=False, methods=['get'])
+    def active(self, request):
+        """Get the currently active decade theme"""
+        try:
+            theme = DecadeTheme.objects.get(is_active=True)
+            return Response(DecadeThemeSerializer(theme).data)
+        except DecadeTheme.DoesNotExist:
+            return Response({'error': 'No active theme'}, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=False, methods=['get'])
+    def predefined(self, request):
+        """Get all predefined (original) themes"""
+        themes = DecadeTheme.objects.filter(is_predefined=True).order_by('decade', 'variation')
+        serializer = DecadeThemeSerializer(themes, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def by_decade(self, request):
+        """Get themes grouped by decade"""
+        decades = ['90s', '2000s', '2010s', '2020s']
+        result = {}
+        for decade in decades:
+            themes = DecadeTheme.objects.filter(decade=decade, is_predefined=True).order_by('variation')
+            result[decade] = DecadeThemeSerializer(themes, many=True).data
+        return Response(result)

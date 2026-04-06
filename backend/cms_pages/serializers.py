@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem
+from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem, DecadeTheme
 
 class NavigationItemSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
@@ -86,3 +86,13 @@ class PageDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Page
         fields = '__all__'
+
+
+class DecadeThemeSerializer(serializers.ModelSerializer):
+    decade_display = serializers.CharField(source='get_decade_display', read_only=True)
+    button_style_display = serializers.CharField(source='get_button_style_display', read_only=True)
+    
+    class Meta:
+        model = DecadeTheme
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']

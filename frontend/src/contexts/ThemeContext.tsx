@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { createTheme, Theme } from '@mui/material/styles';
 import { templatesApi, DesignTemplate } from '../api/templates';
-import { DecadeTheme, getThemeById } from '../themes/decadeThemes';
+import { decadeThemesApi, DecadeTheme } from '../api/decadeThemes';
 
 interface ThemeContextType {
   currentTemplate: DesignTemplate | null;
@@ -32,17 +32,18 @@ export const ThemeContextProvider: React.FC<ThemeContextProviderProps> = ({ chil
 
   const loadActiveTemplate = async () => {
     try {
-      const siteSettings = await templatesApi.getSiteSettings();
-      
-      if (siteSettings.decade_theme_id) {
-        const decadeTheme = getThemeById(siteSettings.decade_theme_id);
-        if (decadeTheme) {
-          setCurrentDecadeTheme(decadeTheme);
-          updateThemeFromDecade(decadeTheme);
-          return;
-        }
+      // Try to load active decade theme from backend
+      try {
+        const activeTheme = await decadeThemesApi.getActive();
+        setCurrentDecadeTheme(activeTheme);
+        updateThemeFromDecade(activeTheme);
+        return;
+      } catch (themeError) {
+        // No active decade theme, try design template
+        console.log('No active decade theme, checking design template');
       }
       
+      // Fallback to design template
       const activeTemplate = await templatesApi.getActiveTemplate();
       setCurrentTemplate(activeTemplate);
       updateTheme(activeTemplate);
@@ -56,67 +57,67 @@ export const ThemeContextProvider: React.FC<ThemeContextProviderProps> = ({ chil
     const newTheme = createTheme({
       palette: {
         primary: {
-          main: decadeTheme.primaryColor,
+          main: decadeTheme.primary_color,
         },
         secondary: {
-          main: decadeTheme.secondaryColor,
+          main: decadeTheme.secondary_color,
         },
         background: {
-          default: decadeTheme.backgroundColor,
-          paper: decadeTheme.backgroundColor,
+          default: decadeTheme.background_color,
+          paper: decadeTheme.background_color,
         },
         text: {
-          primary: decadeTheme.textColor,
+          primary: decadeTheme.text_color,
         },
       },
       typography: {
-        fontFamily: decadeTheme.fontFamily,
-        h1: { fontFamily: decadeTheme.headingFont },
-        h2: { fontFamily: decadeTheme.headingFont },
-        h3: { fontFamily: decadeTheme.headingFont },
-        h4: { fontFamily: decadeTheme.headingFont },
-        h5: { fontFamily: decadeTheme.headingFont },
-        h6: { fontFamily: decadeTheme.headingFont },
+        fontFamily: decadeTheme.font_family,
+        h1: { fontFamily: decadeTheme.heading_font },
+        h2: { fontFamily: decadeTheme.heading_font },
+        h3: { fontFamily: decadeTheme.heading_font },
+        h4: { fontFamily: decadeTheme.heading_font },
+        h5: { fontFamily: decadeTheme.heading_font },
+        h6: { fontFamily: decadeTheme.heading_font },
       },
       shape: {
-        borderRadius: decadeTheme.borderRadius,
+        borderRadius: decadeTheme.border_radius,
       },
-      spacing: decadeTheme.spacingUnit,
+      spacing: decadeTheme.spacing_unit,
       shadows: [
         'none',
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
-        decadeTheme.cardShadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
+        decadeTheme.card_shadow,
       ],
       components: {
         MuiButton: {
           styleOverrides: {
             root: {
-              borderRadius: decadeTheme.buttonStyle === 'pill' ? 50 : 
-                           decadeTheme.buttonStyle === 'squared' ? 4 :
-                           decadeTheme.buttonStyle === 'soft-rounded' ? 12 :
-                           decadeTheme.borderRadius,
+              borderRadius: decadeTheme.button_style === 'pill' ? 50 : 
+                           decadeTheme.button_style === 'squared' ? 4 :
+                           decadeTheme.button_style === 'soft-rounded' ? 12 :
+                           decadeTheme.border_radius,
               textTransform: 'none',
               fontWeight: 500,
             },
@@ -125,14 +126,14 @@ export const ThemeContextProvider: React.FC<ThemeContextProviderProps> = ({ chil
         MuiCard: {
           styleOverrides: {
             root: {
-              boxShadow: decadeTheme.cardShadow,
+              boxShadow: decadeTheme.card_shadow,
             },
           },
         },
       },
     });
     
-    if (decadeTheme.customCSS && !window.location.pathname.startsWith('/admin')) {
+    if (decadeTheme.custom_css && !window.location.pathname.startsWith('/admin')) {
       const styleId = 'decade-theme-custom-css';
       let styleElement = document.getElementById(styleId);
       if (!styleElement) {
@@ -140,7 +141,7 @@ export const ThemeContextProvider: React.FC<ThemeContextProviderProps> = ({ chil
         styleElement.id = styleId;
         document.head.appendChild(styleElement);
       }
-      styleElement.textContent = decadeTheme.customCSS;
+      styleElement.textContent = decadeTheme.custom_css;
     } else {
       const styleElement = document.getElementById('decade-theme-custom-css');
       if (styleElement) {
@@ -236,13 +237,13 @@ export const ThemeContextProvider: React.FC<ThemeContextProviderProps> = ({ chil
 
   const handleSetDecadeTheme = async (themeId: string) => {
     try {
-      await templatesApi.setDecadeTheme(themeId);
-      const decadeTheme = getThemeById(themeId);
-      if (decadeTheme) {
-        setCurrentDecadeTheme(decadeTheme);
-        setCurrentTemplate(null);
-        updateThemeFromDecade(decadeTheme);
-      }
+      // themeId is now the database ID (number), not theme_id string
+      const themeIdNum = parseInt(themeId);
+      await decadeThemesApi.activate(themeIdNum);
+      const decadeTheme = await decadeThemesApi.getById(themeIdNum);
+      setCurrentDecadeTheme(decadeTheme);
+      setCurrentTemplate(null);
+      updateThemeFromDecade(decadeTheme);
     } catch (error) {
       console.error('Error setting decade theme:', error);
       throw error;

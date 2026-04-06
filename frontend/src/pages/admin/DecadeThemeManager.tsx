@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useThemeContext } from '../../contexts/ThemeContext';
 import DecadeThemeSelector from '../../components/DecadeThemeSelector';
-import { DecadeTheme } from '../../themes/decadeThemes';
+import { DecadeTheme } from '../../api/decadeThemes';
 
 const DecadeThemeManager: React.FC = () => {
   const { currentDecadeTheme, setDecadeTheme } = useThemeContext();
@@ -20,7 +20,7 @@ const DecadeThemeManager: React.FC = () => {
 
   const handleThemeSelect = async (theme: DecadeTheme) => {
     try {
-      await setDecadeTheme(theme.id);
+      await setDecadeTheme(theme.id.toString());
       setSnackbarMessage(`Theme "${theme.name}" wurde erfolgreich angewendet!`);
       setSnackbarSeverity('success');
       setSnackbarOpen(true);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -16,17 +16,14 @@ import {
   Select,
   MenuItem,
   Alert,
+  CircularProgress,
 } from '@mui/material';
-import {
-  decadeThemes,
-  DecadeType,
-  DecadeTheme,
-  getAllDecades,
-  getDecadeThemes,
-} from '../themes/decadeThemes';
+import { decadeThemesApi, DecadeTheme } from '../api/decadeThemes';
+
+type DecadeType = '90s' | '2000s' | '2010s' | '2020s';
 
 interface DecadeThemeSelectorProps {
-  currentThemeId?: string;
+  currentThemeId?: number;
   onThemeSelect: (theme: DecadeTheme) => void;
 }
 
@@ -37,9 +34,28 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
   const [selectedDecade, setSelectedDecade] = useState<DecadeType>('2020s');
   const [previewTheme, setPreviewTheme] = useState<DecadeTheme | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [allThemes, setAllThemes] = useState<DecadeTheme[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const decades = getAllDecades();
-  const currentDecadeThemes = getDecadeThemes(selectedDecade);
+  const decades: DecadeType[] = ['90s', '2000s', '2010s', '2020s'];
+  
+  useEffect(() => {
+    loadThemes();
+  }, []);
+
+  const loadThemes = async () => {
+    try {
+      setLoading(true);
+      const themes = await decadeThemesApi.getPredefined();
+      setAllThemes(themes);
+    } catch (error) {
+      console.error('Error loading themes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const currentDecadeThemes = allThemes.filter(theme => theme.decade === selectedDecade);
 
   const handlePreview = (theme: DecadeTheme) => {
     setPreviewTheme(theme);
@@ -70,6 +86,14 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
     };
     return descriptions[decade];
   };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight={400}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -125,7 +149,7 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
               <Box
                 sx={{
                   height: 120,
-                  background: `linear-gradient(135deg, ${theme.primaryColor} 0%, ${theme.secondaryColor} 100%)`,
+                  background: `linear-gradient(135deg, ${theme.primary_color} 0%, ${theme.secondary_color} 100%)`,
                   position: 'relative',
                   overflow: 'hidden',
                 }}
@@ -144,24 +168,24 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
                     sx={{
                       width: 40,
                       height: 40,
-                      backgroundColor: theme.primaryColor,
-                      borderRadius: theme.borderRadius / 4,
+                      backgroundColor: theme.primary_color,
+                      borderRadius: theme.border_radius / 4,
                     }}
                   />
                   <Box
                     sx={{
                       width: 40,
                       height: 40,
-                      backgroundColor: theme.secondaryColor,
-                      borderRadius: theme.borderRadius / 4,
+                      backgroundColor: theme.secondary_color,
+                      borderRadius: theme.border_radius / 4,
                     }}
                   />
                   <Box
                     sx={{
                       width: 40,
                       height: 40,
-                      backgroundColor: theme.backgroundColor,
-                      borderRadius: theme.borderRadius / 4,
+                      backgroundColor: theme.background_color,
+                      borderRadius: theme.border_radius / 4,
                     }}
                   />
                 </Box>
@@ -177,13 +201,13 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
 
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="caption" display="block" gutterBottom>
-                    <strong>Schriftart:</strong> {theme.fontFamily.split(',')[0]}
+                    <strong>Schriftart:</strong> {theme.font_family.split(',')[0]}
                   </Typography>
                   <Typography variant="caption" display="block" gutterBottom>
-                    <strong>Button-Stil:</strong> {theme.buttonStyle}
+                    <strong>Button-Stil:</strong> {theme.button_style}
                   </Typography>
                   <Typography variant="caption" display="block">
-                    <strong>Border Radius:</strong> {theme.borderRadius}px
+                    <strong>Border Radius:</strong> {theme.border_radius}px
                   </Typography>
                 </Box>
               </CardContent>
@@ -230,18 +254,18 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
               <Box
                 sx={{
                   p: 4,
-                  backgroundColor: previewTheme.backgroundColor,
-                  color: previewTheme.textColor,
-                  fontFamily: previewTheme.fontFamily,
-                  borderRadius: `${previewTheme.borderRadius}px`,
+                  backgroundColor: previewTheme.background_color,
+                  color: previewTheme.text_color,
+                  fontFamily: previewTheme.font_family,
+                  borderRadius: `${previewTheme.border_radius}px`,
                   minHeight: 300,
                 }}
               >
                 <Typography
                   variant="h3"
                   sx={{
-                    fontFamily: previewTheme.headingFont,
-                    color: previewTheme.primaryColor,
+                    fontFamily: previewTheme.heading_font,
+                    color: previewTheme.primary_color,
                     mb: 2,
                   }}
                 >
@@ -250,19 +274,19 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
 
                 <Typography variant="body1" paragraph>
                   Dies ist ein Beispieltext, um zu zeigen, wie Ihr Inhalt mit diesem Theme aussehen wird.
-                  Die Schriftart ist {previewTheme.fontFamily.split(',')[0]} und der Text hat die Farbe {previewTheme.textColor}.
+                  Die Schriftart ist {previewTheme.font_family.split(',')[0]} und der Text hat die Farbe {previewTheme.text_color}.
                 </Typography>
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
                   <Button
                     variant="contained"
                     sx={{
-                      backgroundColor: previewTheme.primaryColor,
+                      backgroundColor: previewTheme.primary_color,
                       color: '#fff',
-                      borderRadius: previewTheme.buttonStyle === 'pill' ? '50px' :
-                                   previewTheme.buttonStyle === 'squared' ? '4px' :
-                                   previewTheme.buttonStyle === 'soft-rounded' ? '12px' :
-                                   `${previewTheme.borderRadius}px`,
+                      borderRadius: previewTheme.button_style === 'pill' ? '50px' :
+                                   previewTheme.button_style === 'squared' ? '4px' :
+                                   previewTheme.button_style === 'soft-rounded' ? '12px' :
+                                   `${previewTheme.border_radius}px`,
                     }}
                   >
                     Primärer Button
@@ -270,12 +294,12 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
                   <Button
                     variant="outlined"
                     sx={{
-                      borderColor: previewTheme.secondaryColor,
-                      color: previewTheme.secondaryColor,
-                      borderRadius: previewTheme.buttonStyle === 'pill' ? '50px' :
-                                   previewTheme.buttonStyle === 'squared' ? '4px' :
-                                   previewTheme.buttonStyle === 'soft-rounded' ? '12px' :
-                                   `${previewTheme.borderRadius}px`,
+                      borderColor: previewTheme.secondary_color,
+                      color: previewTheme.secondary_color,
+                      borderRadius: previewTheme.button_style === 'pill' ? '50px' :
+                                   previewTheme.button_style === 'squared' ? '4px' :
+                                   previewTheme.button_style === 'soft-rounded' ? '12px' :
+                                   `${previewTheme.border_radius}px`,
                     }}
                   >
                     Sekundärer Button
@@ -285,29 +309,29 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
                 <Box
                   sx={{
                     p: 3,
-                    backgroundColor: previewTheme.backgroundColor,
-                    boxShadow: previewTheme.cardShadow,
-                    borderRadius: `${previewTheme.borderRadius}px`,
-                    border: `1px solid ${previewTheme.primaryColor}20`,
+                    backgroundColor: previewTheme.background_color,
+                    boxShadow: previewTheme.card_shadow,
+                    borderRadius: `${previewTheme.border_radius}px`,
+                    border: `1px solid ${previewTheme.primary_color}20`,
                   }}
                 >
-                  <Typography variant="h6" sx={{ fontFamily: previewTheme.headingFont, mb: 1 }}>
+                  <Typography variant="h6" sx={{ fontFamily: previewTheme.heading_font, mb: 1 }}>
                     Beispiel Card
                   </Typography>
                   <Typography variant="body2">
-                    Dies ist eine Beispiel-Card mit dem Shadow-Stil: {previewTheme.cardShadow}
+                    Dies ist eine Beispiel-Card mit dem Shadow-Stil: {previewTheme.card_shadow}
                   </Typography>
                 </Box>
 
                 <Box sx={{ mt: 3 }}>
                   <Typography variant="caption" display="block">
-                    <strong>Primärfarbe:</strong> {previewTheme.primaryColor}
+                    <strong>Primärfarbe:</strong> {previewTheme.primary_color}
                   </Typography>
                   <Typography variant="caption" display="block">
-                    <strong>Sekundärfarbe:</strong> {previewTheme.secondaryColor}
+                    <strong>Sekundärfarbe:</strong> {previewTheme.secondary_color}
                   </Typography>
                   <Typography variant="caption" display="block">
-                    <strong>Hintergrund:</strong> {previewTheme.backgroundColor}
+                    <strong>Hintergrund:</strong> {previewTheme.background_color}
                   </Typography>
                 </Box>
               </Box>

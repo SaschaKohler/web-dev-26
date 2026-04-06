@@ -324,6 +324,68 @@ class NavigationItem(models.Model):
         return f"{self.label} ({self.global_template.display_name})"
 
 
+class DecadeTheme(models.Model):
+    DECADE_CHOICES = [
+        ('90s', '1990s'),
+        ('2000s', '2000s'),
+        ('2010s', '2010s'),
+        ('2020s', '2020s'),
+    ]
+    
+    BUTTON_STYLE_CHOICES = [
+        ('pill', 'Pill'),
+        ('squared', 'Squared'),
+        ('soft-rounded', 'Soft Rounded'),
+        ('rounded', 'Rounded'),
+    ]
+    
+    # Identification
+    theme_id = models.CharField(max_length=50, unique=True, help_text='Unique theme ID (e.g., 90s-1, 2000s-2)')
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    decade = models.CharField(max_length=10, choices=DECADE_CHOICES)
+    variation = models.IntegerField(help_text='Theme variation number (1-3)')
+    
+    # Colors
+    primary_color = models.CharField(max_length=7, validators=[RegexValidator(r'^#[0-9A-Fa-f]{6}$')])
+    secondary_color = models.CharField(max_length=7, validators=[RegexValidator(r'^#[0-9A-Fa-f]{6}$')])
+    background_color = models.CharField(max_length=7, validators=[RegexValidator(r'^#[0-9A-Fa-f]{6}$')])
+    text_color = models.CharField(max_length=7, validators=[RegexValidator(r'^#[0-9A-Fa-f]{6}$')])
+    accent_color = models.CharField(max_length=7, blank=True, validators=[RegexValidator(r'^#[0-9A-Fa-f]{6}$')])
+    
+    # Typography
+    font_family = models.CharField(max_length=200)
+    heading_font = models.CharField(max_length=200)
+    
+    # Layout
+    border_radius = models.IntegerField(default=8)
+    spacing_unit = models.IntegerField(default=8)
+    card_shadow = models.CharField(max_length=200)
+    button_style = models.CharField(max_length=20, choices=BUTTON_STYLE_CHOICES, default='rounded')
+    
+    # Custom styling
+    custom_css = models.TextField(blank=True, help_text='Custom CSS for special effects')
+    
+    # Metadata
+    is_predefined = models.BooleanField(default=True, help_text='True for original 12 themes, False for user customizations')
+    is_active = models.BooleanField(default=False, help_text='Currently active theme')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['decade', 'variation']
+        verbose_name = 'Decade Theme'
+        verbose_name_plural = 'Decade Themes'
+    
+    def __str__(self):
+        return f"{self.name} ({self.decade})"
+    
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            DecadeTheme.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
+
 class Page(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)

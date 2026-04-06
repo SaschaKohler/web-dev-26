@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem
+from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem, DecadeTheme
 
 class ContentBlockInline(admin.TabularInline):
     model = ContentBlock
@@ -116,3 +116,32 @@ class ContentBlockAdmin(admin.ModelAdmin):
     list_filter = ['block_type', 'is_visible']
     search_fields = ['title', 'content']
     ordering = ['section', 'order']
+
+@admin.register(DecadeTheme)
+class DecadeThemeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'decade', 'variation', 'is_predefined', 'is_active', 'updated_at']
+    list_filter = ['decade', 'is_predefined', 'is_active']
+    search_fields = ['name', 'description', 'theme_id']
+    readonly_fields = ['created_at', 'updated_at']
+    fieldsets = (
+        ('Identification', {
+            'fields': ('theme_id', 'name', 'description', 'decade', 'variation')
+        }),
+        ('Colors', {
+            'fields': ('primary_color', 'secondary_color', 'background_color', 'text_color', 'accent_color')
+        }),
+        ('Typography', {
+            'fields': ('font_family', 'heading_font')
+        }),
+        ('Layout', {
+            'fields': ('border_radius', 'spacing_unit', 'card_shadow', 'button_style')
+        }),
+        ('Custom Styling', {
+            'fields': ('custom_css',),
+            'classes': ('collapse',)
+        }),
+        ('Metadata', {
+            'fields': ('is_predefined', 'is_active', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

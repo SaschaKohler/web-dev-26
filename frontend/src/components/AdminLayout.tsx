@@ -30,7 +30,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const adminTabs = [
     { label: 'Dashboard', value: '/admin', icon: <Dashboard /> },
     { label: 'Dekaden-Themes', value: '/admin/decade-themes', icon: <History /> },
-    { label: 'Design-Templates', value: '/admin/templates', icon: <Palette /> },
     { label: 'Layouts', value: '/admin/layouts', icon: <Layers /> },
     { label: 'Seiten-Zuordnung', value: '/admin/page-layouts', icon: <Pages /> }
   ];

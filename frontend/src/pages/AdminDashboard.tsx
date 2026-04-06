@@ -101,17 +101,6 @@ const AdminDashboard: React.FC = () => {
       ]
     },
     {
-      title: 'Design-Templates',
-      description: 'Verwalten Sie Farben, Schriftarten und das visuelle Design Ihrer Website',
-      icon: <Palette sx={{ fontSize: 40 }} />,
-      color: '#1976d2',
-      route: '/admin/templates',
-      stats: `${stats.totalTemplates} Templates`,
-      actions: [
-        { label: 'Templates verwalten', action: () => navigate('/admin/templates') }
-      ]
-    },
-    {
       title: 'Global Templates',
       description: 'Header, Navigation und Footer für Ihre gesamte Website konfigurieren',
       icon: <Settings sx={{ fontSize: 40 }} />,
@@ -182,12 +171,6 @@ const AdminDashboard: React.FC = () => {
       icon: <Add />,
       action: () => navigate('/admin/layouts'),
       color: 'primary'
-    },
-    {
-      title: 'Template aktivieren',
-      icon: <Palette />,
-      action: () => navigate('/admin/templates'),
-      color: 'info'
     },
     {
       title: 'Seite bearbeiten',

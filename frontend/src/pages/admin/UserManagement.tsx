@@ -50,7 +50,8 @@ const API_BASE_URL = 'http://localhost:8000/api';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [_loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -188,21 +189,6 @@ const UserManagement: React.FC = () => {
       fetchUsers();
     } catch (error) {
       showSnackbar('Fehler beim Ändern des Staff-Status', 'error');
-    }
-  };
-
-  const _handleToggleActive = async (user: User) => {
-    if (user.id === currentUser?.id) {
-      showSnackbar('Sie können sich nicht selbst deaktivieren', 'error');
-      return;
-    }
-
-    try {
-      await axios.post(`${API_BASE_URL}/users/${user.id}/toggle_active/`);
-      showSnackbar('Benutzer-Status erfolgreich geändert', 'success');
-      fetchUsers();
-    } catch (error) {
-      showSnackbar('Fehler beim Ändern des Benutzer-Status', 'error');
     }
   };
 

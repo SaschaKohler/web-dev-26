@@ -90,7 +90,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const originalRequest = error.config as any;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-          const _isAuthEndpoint = originalRequest.url?.includes('/auth/');
           const isRefreshEndpoint = originalRequest.url?.includes('/auth/refresh');
           
           if (isRefreshEndpoint) {

@@ -52,7 +52,8 @@ const AdminDashboard: React.FC = () => {
     activeLayouts: 0
   });
   const [recentPages, setRecentPages] = useState<any[]>([]);
-  const [_loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

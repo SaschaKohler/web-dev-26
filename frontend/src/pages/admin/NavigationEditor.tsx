@@ -45,7 +45,8 @@ const NavigationEditor: React.FC = () => {
   const [navItems, setNavItems] = useState<NavigationItem[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<NavigationItem | null>(null);
-  const [_loading, setLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
   const [formData, setFormData] = useState<Partial<NavigationItem>>({

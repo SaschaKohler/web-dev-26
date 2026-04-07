@@ -51,6 +51,7 @@ const GlobalTemplatesManager: React.FC = () => {
   const [templates, setTemplates] = useState<GlobalTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<GlobalTemplate | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
@@ -64,15 +65,6 @@ const GlobalTemplatesManager: React.FC = () => {
     show_social_links: true,
     show_contact_info: true,
     is_active: true,
-  });
-
-  const [_navItemForm, _setNavItemForm] = useState<Partial<NavigationItem>>({
-    label: '',
-    url: '',
-    order: 0,
-    icon_name: '',
-    is_external: false,
-    is_visible: true,
   });
 
   useEffect(() => {

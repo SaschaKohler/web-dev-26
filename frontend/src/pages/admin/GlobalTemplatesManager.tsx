@@ -29,7 +29,7 @@ import {
   Delete,
   Save,
 } from '@mui/icons-material';
-import { globalTemplatesApi, GlobalTemplate, NavigationItem } from '../../api/globalTemplates';
+import { globalTemplatesApi, GlobalTemplate } from '../../api/globalTemplates';
 
 interface TabPanelProps {
   children?: React.ReactNode;

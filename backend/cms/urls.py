@@ -26,6 +26,7 @@ from cms_pages.jwt_auth_views import (
     login_view, logout_view, current_user_view, refresh_token_view, 
     csrf_token_view, UserViewSet
 )
+from cms_pages.onboarding_views import onboarding_view
 
 router = DefaultRouter()
 router.register(r'pages', PageViewSet)
@@ -47,4 +48,5 @@ urlpatterns = [
     path('api/auth/refresh/', refresh_token_view, name='refresh-token'),
     path('api/auth/user/', current_user_view, name='current-user'),
     path('api/auth/csrf/', csrf_token_view, name='csrf-token'),
+    path('api/onboard/', onboarding_view, name='onboard'),
 ]

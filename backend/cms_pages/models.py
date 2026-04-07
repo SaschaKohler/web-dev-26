@@ -1,5 +1,43 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
+
+
+class Site(models.Model):
+    """Multi-tenant site container - each LSB gets their own site"""
+    PLAN_CHOICES = [
+        ('starter', 'Starter'),
+        ('pro', 'Pro'),
+        ('premium', 'Premium'),
+    ]
+    
+    subdomain = models.CharField(max_length=63, unique=True, help_text='Unique subdomain (e.g., max-mustermann)')
+    domain = models.CharField(max_length=255, blank=True, null=True, help_text='Custom domain if connected')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sites')
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='starter')
+    
+    # LSB-specific settings
+    site_name = models.CharField(max_length=200, default='Lebens- und Sozialberatung')
+    site_tagline = models.CharField(max_length=300, blank=True)
+    cal_link = models.CharField(max_length=100, blank=True, help_text='Cal.com booking link')
+    
+    # Status
+    is_active = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.site_name} ({self.subdomain})"
+    
+    def get_full_domain(self):
+        if self.domain:
+            return self.domain
+        return f"{self.subdomain}.lsbwebsites.at"
+
 
 class DesignTemplate(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -42,6 +80,7 @@ class DesignTemplate(models.Model):
 
 
 class SiteSettings(models.Model):
+    site = models.OneToOneField(Site, on_delete=models.CASCADE, related_name='settings', null=True, blank=True)
     site_name = models.CharField(max_length=200, default='Lebens- und Sozialberatung')
     site_tagline = models.CharField(max_length=300, blank=True)
     logo_url = models.URLField(blank=True, null=True)
@@ -84,7 +123,8 @@ class PageLayout(models.Model):
         ('custom', 'Custom Layout'),
     ]
     
-    name = models.CharField(max_length=100, unique=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name='layouts', null=True, blank=True)
+    name = models.CharField(max_length=100)
     display_name = models.CharField(max_length=100)
     layout_type = models.CharField(max_length=50, choices=LAYOUT_CHOICES, default='custom')
     description = models.TextField(blank=True)
@@ -246,7 +286,8 @@ class GlobalTemplate(models.Model):
         ('four_columns', 'Four Columns'),
     ]
     
-    name = models.CharField(max_length=100, unique=True)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name='global_templates', null=True, blank=True)
+    name = models.CharField(max_length=100)
     display_name = models.CharField(max_length=100)
     template_type = models.CharField(max_length=50, choices=TEMPLATE_TYPES)
     
@@ -391,8 +432,9 @@ class DecadeTheme(models.Model):
 
 
 class Page(models.Model):
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name='pages', null=True, blank=True)
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField()
     content = models.TextField()
     layout = models.ForeignKey(PageLayout, on_delete=models.SET_NULL, null=True, blank=True, related_name='pages')
     

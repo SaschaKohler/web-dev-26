@@ -45,7 +45,7 @@ const NavigationEditor: React.FC = () => {
   const [navItems, setNavItems] = useState<NavigationItem[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<NavigationItem | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
   const [formData, setFormData] = useState<Partial<NavigationItem>>({
@@ -60,12 +60,14 @@ const NavigationEditor: React.FC = () => {
 
   useEffect(() => {
     loadNavTemplates();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (selectedTemplate) {
       loadNavItems();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTemplate]);
 
   const loadNavTemplates = async () => {

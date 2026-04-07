@@ -5,7 +5,6 @@ import {
   Paper,
   Alert,
   Snackbar,
-  Button,
   Divider,
 } from '@mui/material';
 import { useThemeContext } from '../../contexts/ThemeContext';

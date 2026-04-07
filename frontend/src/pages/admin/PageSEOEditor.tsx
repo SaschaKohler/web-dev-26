@@ -48,7 +48,7 @@ const PageSEOEditor: React.FC = () => {
   const [pages, setPages] = useState<Page[]>([]);
   const [selectedPage, setSelectedPage] = useState<Page | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
   const [seoData, setSeoData] = useState<Partial<Page>>({
@@ -65,6 +65,7 @@ const PageSEOEditor: React.FC = () => {
 
   useEffect(() => {
     loadPages();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadPages = async () => {

@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const originalRequest = error.config as any;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
-          const isAuthEndpoint = originalRequest.url?.includes('/auth/');
+          const _isAuthEndpoint = originalRequest.url?.includes('/auth/');
           const isRefreshEndpoint = originalRequest.url?.includes('/auth/refresh');
           
           if (isRefreshEndpoint) {
@@ -167,6 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = async (username: string, password: string) => {

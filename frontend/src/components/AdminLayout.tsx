@@ -13,12 +13,10 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Avatar,
   Divider
 } from '@mui/material';
 import {
   Dashboard,
-  Palette,
   Layers,
   Pages,
   Home as HomeIcon,

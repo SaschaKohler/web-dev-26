@@ -17,10 +17,6 @@ import {
   Alert,
   Snackbar,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -32,9 +28,6 @@ import {
   Edit,
   Delete,
   Save,
-  Close,
-  ArrowUpward,
-  ArrowDownward,
 } from '@mui/icons-material';
 import { globalTemplatesApi, GlobalTemplate, NavigationItem } from '../../api/globalTemplates';
 
@@ -58,7 +51,6 @@ const GlobalTemplatesManager: React.FC = () => {
   const [templates, setTemplates] = useState<GlobalTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<GlobalTemplate | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [navItemDialogOpen, setNavItemDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
 
@@ -74,7 +66,7 @@ const GlobalTemplatesManager: React.FC = () => {
     is_active: true,
   });
 
-  const [navItemForm, setNavItemForm] = useState<Partial<NavigationItem>>({
+  const [_navItemForm, _setNavItemForm] = useState<Partial<NavigationItem>>({
     label: '',
     url: '',
     order: 0,
@@ -85,6 +77,7 @@ const GlobalTemplatesManager: React.FC = () => {
 
   useEffect(() => {
     loadTemplates();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadTemplates = async () => {

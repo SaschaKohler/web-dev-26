@@ -50,7 +50,7 @@ const API_BASE_URL = 'http://localhost:8000/api';
 
 const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -75,6 +75,7 @@ const UserManagement: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUsers = async () => {
@@ -190,7 +191,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const handleToggleActive = async (user: User) => {
+  const _handleToggleActive = async (user: User) => {
     if (user.id === currentUser?.id) {
       showSnackbar('Sie können sich nicht selbst deaktivieren', 'error');
       return;

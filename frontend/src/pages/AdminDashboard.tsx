@@ -17,7 +17,6 @@ import {
   IconButton
 } from '@mui/material';
 import {
-  Palette,
   Layers,
   Pages,
   Settings,
@@ -53,7 +52,7 @@ const AdminDashboard: React.FC = () => {
     activeLayouts: 0
   });
   const [recentPages, setRecentPages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {

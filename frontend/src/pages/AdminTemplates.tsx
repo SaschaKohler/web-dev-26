@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
   Typography,
   Box,
   Alert,
@@ -13,7 +12,6 @@ import {
   Tabs,
   Tab,
   TextField,
-  MenuItem,
   Paper
 } from '@mui/material';
 import { Palette, Settings as SettingsIcon } from '@mui/icons-material';

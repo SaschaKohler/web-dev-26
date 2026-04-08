@@ -26,6 +26,7 @@ import SiteSettingsEditor from './pages/admin/SiteSettingsEditor';
 import PageSEOEditor from './pages/admin/PageSEOEditor';
 import DecadeThemeManager from './pages/admin/DecadeThemeManager';
 import UserManagement from './pages/admin/UserManagement';
+import Onboarding from './pages/Onboarding';
 
 function ThemedRoutes() {
   const location = useLocation();
@@ -47,6 +48,7 @@ function ThemedRoutes() {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/impressum" element={<Impressum />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/admin/login" element={<Login />} />
         <Route path="/admin" element={<ProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
         <Route path="/admin/templates" element={<ProtectedRoute><AdminLayout><AdminTemplates /></AdminLayout></ProtectedRoute>} />

@@ -24,6 +24,11 @@ class TenantMiddleware:
             request.site = None
             return self.get_response(request)
         
+        # Skip Railway and Netlify infrastructure domains
+        if host.endswith('.up.railway.app') or host.endswith('.netlify.app'):
+            request.site = None
+            return self.get_response(request)
+        
         # Extract subdomain
         if '.' in host:
             subdomain = host.split('.')[0]

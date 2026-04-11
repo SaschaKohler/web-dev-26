@@ -27,6 +27,11 @@ from cms_pages.jwt_auth_views import (
     csrf_token_view, UserViewSet
 )
 from cms_pages.onboarding_views import onboarding_view
+from cms_pages.stripe_views import create_checkout_session, verify_session, stripe_webhook, get_stripe_config
+from cms_pages.analytics_views import (
+    analytics_overview, analytics_chart, analytics_pages,
+    analytics_sources, analytics_realtime
+)
 
 router = DefaultRouter()
 router.register(r'pages', PageViewSet)
@@ -49,4 +54,15 @@ urlpatterns = [
     path('api/auth/user/', current_user_view, name='current-user'),
     path('api/auth/csrf/', csrf_token_view, name='csrf-token'),
     path('api/onboard/', onboarding_view, name='onboard'),
+    # Stripe endpoints
+    path('api/stripe/create-checkout/', create_checkout_session, name='stripe-create-checkout'),
+    path('api/stripe/verify-session/', verify_session, name='stripe-verify-session'),
+    path('api/stripe/webhook/', stripe_webhook, name='stripe-webhook'),
+    path('api/stripe/config/', get_stripe_config, name='stripe-config'),
+    # Analytics endpoints
+    path('api/analytics/overview/', analytics_overview, name='analytics-overview'),
+    path('api/analytics/chart/', analytics_chart, name='analytics-chart'),
+    path('api/analytics/pages/', analytics_pages, name='analytics-pages'),
+    path('api/analytics/sources/', analytics_sources, name='analytics-sources'),
+    path('api/analytics/realtime/', analytics_realtime, name='analytics-realtime'),
 ]

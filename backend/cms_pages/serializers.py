@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem, DecadeTheme
+from .models import Page, DesignTemplate, SiteSettings, PageLayout, Section, ContentBlock, GlobalTemplate, NavigationItem, DecadeTheme, Site
 
 class NavigationItemSerializer(serializers.ModelSerializer):
     children = serializers.SerializerMethodField()
@@ -98,6 +98,12 @@ class DecadeThemeSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
 
+
+class SiteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Site
+        fields = ['id', 'subdomain', 'domain', 'site_name', 'site_tagline', 'plan', 'is_active', 'is_published', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

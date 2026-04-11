@@ -71,6 +71,10 @@ const DynamicPage: React.FC<DynamicPageProps> = ({ slug, fallbackContent }) => {
   }
 
   if (error || !page) {
+    // Wenn fallbackContent vorhanden, zeige ihn bei 404 an
+    if (fallbackContent) {
+      return <>{fallbackContent}</>;
+    }
     return (
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Paper sx={{ p: 4, textAlign: 'center' }}>
@@ -90,10 +94,8 @@ const DynamicPage: React.FC<DynamicPageProps> = ({ slug, fallbackContent }) => {
     return <PageRenderer layout={layout} />;
   }
 
-  // Sonst: Fallback-Content oder Standard-Rendering
-  if (fallbackContent) {
-    return <>{fallbackContent}</>;
-  }
+  // Wenn Page existiert aber kein Layout hat: Standard-Rendering mit Page-Daten
+  // (nicht fallbackContent, damit die dynamischen Page-Daten angezeigt werden)
 
   // Standard-Rendering ohne Layout
   return (

@@ -5,9 +5,9 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import { ThemeContextProvider, useThemeContext } from './contexts/ThemeContext';
 import { AdminThemeProvider, useAdminTheme } from './contexts/AdminThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
-import Navbar from './components/Navbar';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import PageLayout from './components/layout/PageLayout';
 import Home from './pages/Home';
 import About from './pages/About';
 import Services from './pages/Services';
@@ -27,6 +27,8 @@ import PageSEOEditor from './pages/admin/PageSEOEditor';
 import DecadeThemeManager from './pages/admin/DecadeThemeManager';
 import UserManagement from './pages/admin/UserManagement';
 import Onboarding from './pages/Onboarding';
+import AnalyticsDashboard from './components/AnalyticsDashboard';
+import MenuEditor from './pages/admin/MenuEditor';
 
 function ThemedRoutes() {
   const location = useLocation();
@@ -39,15 +41,14 @@ function ThemedRoutes() {
   return (
     <ThemeProvider theme={currentTheme}>
       <CssBaseline />
-      {!isAdminRoute && <Navbar />}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/booking" element={<Booking />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/impressum" element={<Impressum />} />
+        <Route path="/" element={<PageLayout><Home /></PageLayout>} />
+        <Route path="/about" element={<PageLayout><About /></PageLayout>} />
+        <Route path="/services" element={<PageLayout><Services /></PageLayout>} />
+        <Route path="/booking" element={<PageLayout><Booking /></PageLayout>} />
+        <Route path="/faq" element={<PageLayout><FAQ /></PageLayout>} />
+        <Route path="/contact" element={<PageLayout><Contact /></PageLayout>} />
+        <Route path="/impressum" element={<PageLayout><Impressum /></PageLayout>} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/admin/login" element={<Login />} />
         <Route path="/admin" element={<ProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
@@ -60,6 +61,8 @@ function ThemedRoutes() {
         <Route path="/admin/seo" element={<ProtectedRoute><AdminLayout><PageSEOEditor /></AdminLayout></ProtectedRoute>} />
         <Route path="/admin/decade-themes" element={<ProtectedRoute><AdminLayout><DecadeThemeManager /></AdminLayout></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute><AdminLayout><UserManagement /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/analytics" element={<ProtectedRoute><AdminLayout><AnalyticsDashboard /></AdminLayout></ProtectedRoute>} />
+        <Route path="/admin/menu-editor" element={<ProtectedRoute><AdminLayout><MenuEditor /></AdminLayout></ProtectedRoute>} />
       </Routes>
     </ThemeProvider>
   );

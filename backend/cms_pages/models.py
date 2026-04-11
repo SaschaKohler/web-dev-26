@@ -452,6 +452,8 @@ class Page(models.Model):
     structured_data = models.JSONField(default=dict, blank=True, help_text='JSON-LD structured data')
     
     is_published = models.BooleanField(default=True)
+    is_trashed = models.BooleanField(default=False, help_text='Moved to trash, pending deletion')
+    trashed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -463,3 +465,78 @@ class Page(models.Model):
     
     def get_meta_description(self):
         return self.meta_description or self.content[:160]
+
+
+# ============================================================================
+# ANALYTICS MODELS - Privacy-first, DSGVO-konform
+# ============================================================================
+
+class PageView(models.Model):
+    """
+    Anonymisierte Page Views - keine persönlichen Daten
+    DSGVO-konform ohne Consent-Banner nötig
+    """
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name='page_views')
+    page_path = models.CharField(max_length=255, default='/')
+    
+    # Anonymisierte technische Daten
+    country = models.CharField(max_length=2, blank=True, help_text='ISO Ländercode')
+    device_type = models.CharField(max_length=20, blank=True, choices=[
+        ('desktop', 'Desktop'),
+        ('mobile', 'Mobile'),
+        ('tablet', 'Tablet'),
+    ])
+    browser_family = models.CharField(max_length=50, blank=True)
+    os_family = models.CharField(max_length=50, blank=True)
+    
+    # Referrer Domain (ohne Query-Parameter)
+    referrer_domain = models.CharField(max_length=255, blank=True)
+    
+    # Zeitstempel für Aggregierung
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    hour = models.IntegerField()
+    date = models.DateField(db_index=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['site', 'date', '-timestamp']),
+            models.Index(fields=['site', 'page_path', 'date']),
+        ]
+        ordering = ['-timestamp']
+        verbose_name = 'Page View'
+        verbose_name_plural = 'Page Views'
+
+
+class DailyStats(models.Model):
+    """
+    Aggregierte Tagesstatistiken für schnelle Dashboard-Abfragen
+    """
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, related_name='daily_stats')
+    date = models.DateField()
+    
+    # Kern-Metriken
+    total_views = models.PositiveIntegerField(default=0)
+    unique_visitors = models.PositiveIntegerField(default=0)
+    
+    # Engagement (optional, falls implementiert)
+    avg_session_duration = models.PositiveIntegerField(default=0, help_text='Sekunden')
+    bounce_rate = models.FloatField(default=0.0)
+    
+    # Top-Daten als JSON (Top 10)
+    top_pages = models.JSONField(default=list, help_text='Top 10 Seiten mit Views')
+    referrers = models.JSONField(default=dict, help_text='Traffic-Quellen')
+    devices = models.JSONField(default=dict, help_text='Device-Aufteilung')
+    countries = models.JSONField(default=dict, help_text='Länder-Verteilung')
+    
+    # Zeitstempel
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['site', 'date']
+        indexes = [
+            models.Index(fields=['site', '-date']),
+        ]
+        ordering = ['-date']
+        verbose_name = 'Tagesstatistik'
+        verbose_name_plural = 'Tagesstatistiken'

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -18,13 +18,14 @@ import {
   Alert,
   CircularProgress,
 } from '@mui/material';
-import { decadeThemesApi, DecadeTheme } from '../api/decadeThemes';
+import { decadeThemesApi, DecadeTheme as ApiDecadeTheme } from '../api/decadeThemes';
+import { decadeThemes as localDecadeThemes, DecadeTheme as LocalDecadeTheme } from '../themes/decadeThemes';
 
 type DecadeType = '90s' | '2000s' | '2010s' | '2020s';
 
 interface DecadeThemeSelectorProps {
   currentThemeId?: number;
-  onThemeSelect: (theme: DecadeTheme) => void;
+  onThemeSelect: (theme: ApiDecadeTheme) => void;
 }
 
 const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
@@ -32,37 +33,75 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
   onThemeSelect,
 }) => {
   const [selectedDecade, setSelectedDecade] = useState<DecadeType>('2020s');
-  const [previewTheme, setPreviewTheme] = useState<DecadeTheme | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<ApiDecadeTheme | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [allThemes, setAllThemes] = useState<DecadeTheme[]>([]);
+  const [allThemes, setAllThemes] = useState<ApiDecadeTheme[]>([]);
   const [loading, setLoading] = useState(true);
 
   const decades: DecadeType[] = ['90s', '2000s', '2010s', '2020s'];
-  
-  useEffect(() => {
-    loadThemes();
-  }, []);
 
-  const loadThemes = async () => {
+  // Convert local theme to API format
+  const convertLocalToApiTheme = (localTheme: LocalDecadeTheme): ApiDecadeTheme => ({
+    id: localTheme.id as any,
+    theme_id: localTheme.id,
+    name: localTheme.name,
+    description: localTheme.description,
+    decade: localTheme.decade,
+    decade_display: localTheme.decade === '90s' ? '1990er' : 
+                   localTheme.decade === '2000s' ? '2000er' :
+                   localTheme.decade === '2010s' ? '2010er' : '2020er',
+    variation: localTheme.variation,
+    primary_color: localTheme.primaryColor,
+    secondary_color: localTheme.secondaryColor,
+    background_color: localTheme.backgroundColor,
+    text_color: localTheme.textColor,
+    accent_color: localTheme.accentColor || localTheme.primaryColor,
+    font_family: localTheme.fontFamily,
+    heading_font: localTheme.headingFont,
+    border_radius: localTheme.borderRadius,
+    spacing_unit: localTheme.spacingUnit,
+    card_shadow: localTheme.cardShadow,
+    button_style: localTheme.buttonStyle,
+    button_style_display: localTheme.buttonStyle,
+    custom_css: localTheme.customCSS || '',
+    is_predefined: true,
+    is_active: false,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  const loadThemes = useCallback(async () => {
     try {
       setLoading(true);
       const themes = await decadeThemesApi.getPredefined();
-      setAllThemes(themes);
+      // Use local themes as fallback if API returns empty
+      if (themes.length === 0) {
+        console.log('API returned no themes, using local fallback');
+        setAllThemes(localDecadeThemes.map(convertLocalToApiTheme));
+      } else {
+        setAllThemes(themes);
+      }
     } catch (error) {
       console.error('Error loading themes:', error);
+      // Use local themes as fallback on error
+      setAllThemes(localDecadeThemes.map(convertLocalToApiTheme));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadThemes();
+  }, [loadThemes]);
 
   const currentDecadeThemes = allThemes.filter(theme => theme.decade === selectedDecade);
 
-  const handlePreview = (theme: DecadeTheme) => {
+  const handlePreview = (theme: ApiDecadeTheme) => {
     setPreviewTheme(theme);
     setPreviewOpen(true);
   };
 
-  const handleApplyTheme = (theme: DecadeTheme) => {
+  const handleApplyTheme = (theme: ApiDecadeTheme) => {
     onThemeSelect(theme);
     setPreviewOpen(false);
   };
@@ -119,6 +158,11 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
         </Select>
       </FormControl>
 
+      {currentDecadeThemes.length === 0 ? (
+        <Alert severity="warning" sx={{ mt: 2 }}>
+          Keine Themes für diese Dekade verfügbar. Bitte laden Sie die Seite neu oder kontaktieren Sie den Support.
+        </Alert>
+      ) : (
       <Grid container spacing={3}>
         {currentDecadeThemes.map((theme) => (
           <Grid size={{ xs: 12, md: 4 }} key={theme.id}>
@@ -234,6 +278,7 @@ const DecadeThemeSelector: React.FC<DecadeThemeSelectorProps> = ({
           </Grid>
         ))}
       </Grid>
+      )}
 
       <Dialog
         open={previewOpen}

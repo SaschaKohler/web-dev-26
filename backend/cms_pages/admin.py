@@ -59,13 +59,13 @@ class NavigationItemAdmin(admin.ModelAdmin):
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
-    list_display = ['title', 'slug', 'layout', 'is_published', 'updated_at']
-    list_filter = ['is_published', 'layout']
+    list_display = ['title', 'slug', 'site', 'layout', 'is_published', 'updated_at']
+    list_filter = ['is_published', 'layout', 'site']
     search_fields = ['title', 'content', 'meta_title', 'meta_description']
     prepopulated_fields = {'slug': ('title',)}
     fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'slug', 'content', 'layout', 'is_published')
+            'fields': ('title', 'slug', 'site', 'content', 'layout', 'is_published')
         }),
         ('SEO Settings', {
             'fields': ('meta_title', 'meta_description', 'meta_keywords', 'meta_image'),

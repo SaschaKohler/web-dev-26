@@ -1,0 +1,20 @@
+[tool.uv.workspace]
+members = ["backend"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "cms.settings"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+testpaths = ["backend/tests"]
+pythonpath = ["backend"]
+addopts = "--reuse-db -v --tb=short --strict-markers"
+markers = [
+    "models: Model-level tests",
+    "serializers: Serializer tests",
+    "api: API / ViewSet tests",
+    "auth: Authentication & authorization tests",
+    "analytics: Analytics tests",
+    "middleware: Middleware tests",
+    "integration: Integration tests",
+]

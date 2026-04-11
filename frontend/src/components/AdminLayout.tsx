@@ -23,7 +23,9 @@ import {
   History,
   People,
   AccountCircle,
-  Logout
+  Logout,
+  Analytics as AnalyticsIcon,
+  MenuOpen as MenuOpenIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -40,9 +42,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   const adminTabs = [
     { label: 'Dashboard', value: '/admin', icon: <Dashboard /> },
+    { label: 'Analytics', value: '/admin/analytics', icon: <AnalyticsIcon /> },
     { label: 'Dekaden-Themes', value: '/admin/decade-themes', icon: <History /> },
     { label: 'Layouts', value: '/admin/layouts', icon: <Layers /> },
     { label: 'Seiten-Zuordnung', value: '/admin/page-layouts', icon: <Pages /> },
+    { label: 'Menü-Editor', value: '/admin/menu-editor', icon: <MenuOpenIcon /> },
     { label: 'Benutzerverwaltung', value: '/admin/users', icon: <People /> }
   ];
 

@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     PageViewSet, DesignTemplateViewSet, SiteSettingsViewSet,
     PageLayoutViewSet, SectionViewSet, ContentBlockViewSet,
-    GlobalTemplateViewSet, NavigationItemViewSet, DecadeThemeViewSet
+    GlobalTemplateViewSet, NavigationItemViewSet, DecadeThemeViewSet,
+    SiteViewSet
 )
 
 router = DefaultRouter()
@@ -16,6 +17,7 @@ router.register(r'blocks', ContentBlockViewSet)
 router.register(r'global-templates', GlobalTemplateViewSet)
 router.register(r'navigation-items', NavigationItemViewSet)
 router.register(r'decade-themes', DecadeThemeViewSet)
+router.register(r'sites', SiteViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

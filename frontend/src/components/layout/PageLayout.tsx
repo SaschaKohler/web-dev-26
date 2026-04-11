@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
-import Header from './Header';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import SEO from '../SEO';
@@ -82,17 +81,6 @@ const PageLayout: React.FC<PageLayoutProps> = ({
         structuredData={structuredData}
       />
 
-      {headerTemplate && (
-        <Header
-          logoUrl={headerTemplate.logo_url || siteSettings?.logo_url}
-          logoAlt={headerTemplate.logo_alt || siteSettings?.site_name}
-          backgroundColor={headerTemplate.background_color}
-          textColor={headerTemplate.text_color}
-          style={headerTemplate.style}
-          onMenuClick={handleMobileNavToggle}
-        />
-      )}
-
       {navTemplate && (
         <Navigation
           items={navTemplate.nav_items || []}
@@ -101,6 +89,10 @@ const PageLayout: React.FC<PageLayoutProps> = ({
           textColor={navTemplate.text_color}
           mobileOpen={mobileNavOpen}
           onMobileClose={handleMobileNavClose}
+          onMobileOpen={handleMobileNavToggle}
+          menuConfig={navTemplate.metadata?.menu_config}
+          logoUrl={headerTemplate?.logo_url || siteSettings?.logo_url}
+          logoAlt={headerTemplate?.logo_alt || siteSettings?.site_name}
         />
       )}
 

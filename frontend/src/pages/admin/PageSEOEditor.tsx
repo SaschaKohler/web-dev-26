@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -23,8 +23,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Switch,
+  FormControlLabel,
+  Paper,
+  Tooltip,
 } from '@mui/material';
-import { Save, Edit, Search } from '@mui/icons-material';
+import { Save, Edit, Search, AutoAwesome } from '@mui/icons-material';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
@@ -43,6 +47,21 @@ interface Page {
   twitter_card?: string;
   structured_data?: any;
 }
+
+const buildAutoCanonical = (slug: string): string => {
+  return `${window.location.origin}/${slug}`;
+};
+
+const buildAutoStructuredData = (title: string, description: string, canonicalUrl: string, image?: string): object => {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description: description,
+    url: canonicalUrl,
+    ...(image ? { image } : {}),
+  };
+};
 
 const PageSEOEditor: React.FC = () => {
   const [pages, setPages] = useState<Page[]>([]);
@@ -64,10 +83,39 @@ const PageSEOEditor: React.FC = () => {
     structured_data: {},
   });
 
+  const [overrideCanonical, setOverrideCanonical] = useState(false);
+  const [overrideStructuredData, setOverrideStructuredData] = useState(false);
+
+  const autoCanonical = selectedPage ? buildAutoCanonical(selectedPage.slug) : '';
+  const autoStructuredData = buildAutoStructuredData(
+    seoData.meta_title || selectedPage?.title || '',
+    seoData.meta_description || '',
+    overrideCanonical && seoData.canonical_url ? seoData.canonical_url : autoCanonical,
+    seoData.meta_image || undefined,
+  );
+  const autoTwitterCard = seoData.meta_image ? 'summary_large_image' : 'summary';
+
+  const getEffectiveSeoData = useCallback((): Partial<Page> => {
+    return {
+      ...seoData,
+      canonical_url: overrideCanonical ? seoData.canonical_url : autoCanonical,
+      twitter_card: seoData.twitter_card,
+      structured_data: overrideStructuredData ? seoData.structured_data : autoStructuredData,
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seoData, overrideCanonical, overrideStructuredData, autoCanonical]);
+
   useEffect(() => {
     loadPages();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!overrideCanonical) {
+      setSeoData((prev) => ({ ...prev, twitter_card: autoTwitterCard }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seoData.meta_image]);
 
   const loadPages = async () => {
     try {
@@ -89,7 +137,7 @@ const PageSEOEditor: React.FC = () => {
     if (!selectedPage) return;
     try {
       setLoading(true);
-      await axios.patch(`${API_BASE_URL}/pages/${selectedPage.id}/`, seoData);
+      await axios.patch(`${API_BASE_URL}/pages/${selectedPage.id}/`, getEffectiveSeoData());
       showSnackbar('SEO-Einstellungen erfolgreich gespeichert', 'success');
       setEditDialogOpen(false);
       loadPages();
@@ -102,6 +150,11 @@ const PageSEOEditor: React.FC = () => {
 
   const openEditDialog = (page: Page) => {
     setSelectedPage(page);
+    const hasCustomCanonical = !!page.canonical_url && page.canonical_url !== buildAutoCanonical(page.slug);
+    const hasCustomStructuredData =
+      !!page.structured_data && Object.keys(page.structured_data).length > 0;
+    setOverrideCanonical(hasCustomCanonical);
+    setOverrideStructuredData(hasCustomStructuredData);
     setSeoData({
       meta_title: page.meta_title || '',
       meta_description: page.meta_description || '',
@@ -110,23 +163,21 @@ const PageSEOEditor: React.FC = () => {
       canonical_url: page.canonical_url || '',
       robots_meta: page.robots_meta || 'index, follow',
       og_type: page.og_type || 'website',
-      twitter_card: page.twitter_card || 'summary_large_image',
+      twitter_card: page.twitter_card || (page.meta_image ? 'summary_large_image' : 'summary'),
       structured_data: page.structured_data || {},
     });
     setEditDialogOpen(true);
   };
 
   const getSEOScore = (page: Page): { score: number; color: string } => {
-    let score = 0;
+    let score = 20;
     if (page.meta_title) score += 25;
     if (page.meta_description) score += 25;
     if (page.meta_keywords) score += 15;
     if (page.meta_image) score += 15;
-    if (page.canonical_url) score += 10;
-    if (page.structured_data && Object.keys(page.structured_data).length > 0) score += 10;
 
     if (score >= 80) return { score, color: 'success' };
-    if (score >= 50) return { score, color: 'warning' };
+    if (score >= 45) return { score, color: 'warning' };
     return { score, color: 'error' };
   };
 
@@ -254,13 +305,62 @@ const PageSEOEditor: React.FC = () => {
                 Erweiterte SEO
               </Typography>
               <Stack spacing={2}>
-                <TextField
-                  label="Canonical URL"
-                  value={seoData.canonical_url}
-                  onChange={(e) => setSeoData({ ...seoData, canonical_url: e.target.value })}
-                  fullWidth
-                  helperText="Kanonische URL zur Vermeidung von Duplicate Content"
-                />
+
+                {/* Canonical URL — auto-generated */}
+                <Paper variant="outlined" sx={{ p: 2, bgcolor: overrideCanonical ? 'background.paper' : 'action.hover' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <AutoAwesome fontSize="small" color="primary" />
+                      <Typography variant="subtitle2">Canonical URL</Typography>
+                    </Box>
+                    <Tooltip title={overrideCanonical ? 'Zurück zur automatischen URL' : 'Manuell bearbeiten'}>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            size="small"
+                            checked={overrideCanonical}
+                            onChange={(e) => {
+                              setOverrideCanonical(e.target.checked);
+                              if (!e.target.checked) {
+                                setSeoData((prev) => ({ ...prev, canonical_url: '' }));
+                              }
+                            }}
+                          />
+                        }
+                        label={<Typography variant="caption">{overrideCanonical ? 'Manuell' : 'Automatisch'}</Typography>}
+                        labelPlacement="start"
+                      />
+                    </Tooltip>
+                  </Box>
+                  {overrideCanonical ? (
+                    <TextField
+                      label="Canonical URL"
+                      value={seoData.canonical_url}
+                      onChange={(e) => setSeoData({ ...seoData, canonical_url: e.target.value })}
+                      fullWidth
+                      size="small"
+                      helperText="Kanonische URL zur Vermeidung von Duplicate Content"
+                    />
+                  ) : (
+                    <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                      {autoCanonical}
+                    </Typography>
+                  )}
+                </Paper>
+
+                {/* Twitter Card — auto-set based on image */}
+                <Paper variant="outlined" sx={{ p: 2, bgcolor: 'action.hover' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                    <AutoAwesome fontSize="small" color="primary" />
+                    <Typography variant="subtitle2">Twitter Card</Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {autoTwitterCard === 'summary_large_image'
+                      ? 'summary_large_image — wird automatisch gesetzt, da ein Bild hinterlegt ist'
+                      : 'summary — wird automatisch gesetzt (kein Bild hinterlegt)'}
+                  </Typography>
+                </Paper>
+
                 <FormControl fullWidth>
                   <InputLabel>Robots Meta</InputLabel>
                   <Select
@@ -286,41 +386,65 @@ const PageSEOEditor: React.FC = () => {
                     <MenuItem value="profile">Profile</MenuItem>
                   </Select>
                 </FormControl>
-                <FormControl fullWidth>
-                  <InputLabel>Twitter Card</InputLabel>
-                  <Select
-                    value={seoData.twitter_card}
-                    onChange={(e) => setSeoData({ ...seoData, twitter_card: e.target.value })}
-                    label="Twitter Card"
-                  >
-                    <MenuItem value="summary">Summary</MenuItem>
-                    <MenuItem value="summary_large_image">Summary Large Image</MenuItem>
-                  </Select>
-                </FormControl>
               </Stack>
             </Box>
 
             <Divider />
 
-            <Box>
-              <Typography variant="h6" gutterBottom>
-                Structured Data (JSON-LD)
-              </Typography>
-              <TextField
-                value={JSON.stringify(seoData.structured_data, null, 2)}
-                onChange={(e) => {
-                  try {
-                    setSeoData({ ...seoData, structured_data: JSON.parse(e.target.value) });
-                  } catch (err) {
-                    // Invalid JSON, ignore
-                  }
-                }}
-                fullWidth
-                multiline
-                rows={8}
-                helperText="Schema.org Structured Data im JSON-LD Format"
-              />
-            </Box>
+            {/* Structured Data — auto-generated */}
+            <Paper variant="outlined" sx={{ p: 2, bgcolor: overrideStructuredData ? 'background.paper' : 'action.hover' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AutoAwesome fontSize="small" color="primary" />
+                  <Typography variant="subtitle2">Structured Data (JSON-LD)</Typography>
+                </Box>
+                <Tooltip title={overrideStructuredData ? 'Zurück zu automatischen Daten' : 'Manuell bearbeiten (für Experten)'}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        size="small"
+                        checked={overrideStructuredData}
+                        onChange={(e) => {
+                          setOverrideStructuredData(e.target.checked);
+                          if (e.target.checked) {
+                            setSeoData((prev) => ({ ...prev, structured_data: autoStructuredData }));
+                          } else {
+                            setSeoData((prev) => ({ ...prev, structured_data: {} }));
+                          }
+                        }}
+                      />
+                    }
+                    label={<Typography variant="caption">{overrideStructuredData ? 'Manuell' : 'Automatisch'}</Typography>}
+                    labelPlacement="start"
+                  />
+                </Tooltip>
+              </Box>
+              {overrideStructuredData ? (
+                <TextField
+                  value={JSON.stringify(seoData.structured_data, null, 2)}
+                  onChange={(e) => {
+                    try {
+                      setSeoData({ ...seoData, structured_data: JSON.parse(e.target.value) });
+                    } catch (err) {
+                      // Invalid JSON, ignore
+                    }
+                  }}
+                  fullWidth
+                  multiline
+                  rows={8}
+                  size="small"
+                  helperText="Schema.org Structured Data im JSON-LD Format"
+                />
+              ) : (
+                <Typography
+                  variant="body2"
+                  component="pre"
+                  sx={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'text.secondary', whiteSpace: 'pre-wrap', wordBreak: 'break-all', m: 0 }}
+                >
+                  {JSON.stringify(autoStructuredData, null, 2)}
+                </Typography>
+              )}
+            </Paper>
           </Stack>
         </DialogContent>
         <DialogActions>

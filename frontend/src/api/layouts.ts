@@ -36,6 +36,7 @@ export interface Section {
   padding_bottom: number;
   is_full_width: boolean;
   is_visible: boolean;
+  metadata?: Record<string, any>;
   content_blocks: ContentBlock[];
 }
 
@@ -128,8 +129,13 @@ export const layoutsApi = {
 
   // Page management
   getPages: async (): Promise<any[]> => {
-    const response = await axios.get<any[]>(`${API_BASE_URL}/pages/`);
+    const response = await axios.get<any[]>(`${API_BASE_URL}/pages/all_pages/`);
     return response.data as any[];
+  },
+
+  createPage: async (data: { title: string; slug: string; content?: string; is_published?: boolean }): Promise<any> => {
+    const response = await axios.post(`${API_BASE_URL}/pages/`, data);
+    return response.data;
   },
 
   assignLayoutToPage: async (pageId: number, layoutId: number): Promise<any> => {
@@ -143,6 +149,31 @@ export const layoutsApi = {
     const response = await axios.patch(`${API_BASE_URL}/pages/${pageId}/`, {
       layout: null
     });
+    return response.data;
+  },
+
+  getTrashedPages: async (): Promise<any[]> => {
+    const response = await axios.get<any[]>(`${API_BASE_URL}/pages/trashed/`);
+    return response.data as any[];
+  },
+
+  trashPage: async (pageId: number): Promise<any> => {
+    const response = await axios.post(`${API_BASE_URL}/pages/${pageId}/trash/`);
+    return response.data;
+  },
+
+  restorePage: async (pageId: number): Promise<any> => {
+    const response = await axios.post(`${API_BASE_URL}/pages/${pageId}/restore/`);
+    return response.data;
+  },
+
+  emptyTrash: async (): Promise<any> => {
+    const response = await axios.delete(`${API_BASE_URL}/pages/empty_trash/`);
+    return response.data;
+  },
+
+  deletePage: async (pageId: number): Promise<any> => {
+    const response = await axios.delete(`${API_BASE_URL}/pages/${pageId}/`);
     return response.data;
   }
 };

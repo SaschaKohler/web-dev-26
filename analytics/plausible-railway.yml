@@ -1,0 +1,45 @@
+# Plausible Analytics auf Railway
+# Einfacher als Matomo - nur eine Container, keine separate DB nötig
+
+services:
+  plausible:
+    image: plausible/analytics:latest
+    port: 8000
+    env:
+      # Basis-Konfiguration
+      BASE_URL: ${PLAUSIBLE_BASE_URL}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      
+      # Datenbank (verwendet Railway PostgreSQL)
+      DATABASE_URL: ${DATABASE_URL}
+      
+      # Optional: Clickhouse für bessere Performance (sonst Postgres)
+      CLICKHOUSE_DATABASE_URL: ${CLICKHOUSE_DATABASE_URL}
+      
+      # E-Mail (optional für Reports)
+      MAILER_EMAIL: ${MAILER_EMAIL}
+      SMTP_HOST_ADDR: ${SMTP_HOST}
+      SMTP_HOST_PORT: ${SMTP_PORT}
+      SMTP_USER_NAME: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASS}
+      
+      # Features
+      DISABLE_REGISTRATION: "true"  # Nur Admin-Account
+      ENABLE_EMAIL_REPORTS: "true"
+      
+      # Privacy-Einstellungen (alles disabled für DSGVO-Konformität)
+      DISABLE_GOALS: "false"
+      DISABLE_PROPS: "false"
+      
+    healthcheck:
+      path: /api/health
+      port: 8000
+      
+  # Optional: Clickhouse für bessere Performance bei vielen Events
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    port: 8123
+    env:
+      CLICKHOUSE_DB: plausible
+      CLICKHOUSE_USER: plausible
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
